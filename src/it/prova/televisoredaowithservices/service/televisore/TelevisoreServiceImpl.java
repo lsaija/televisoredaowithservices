@@ -2,6 +2,7 @@ package it.prova.televisoredaowithservices.service.televisore;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import it.prova.televisoredaowiithservices.connection.MyConnection;
@@ -116,6 +117,48 @@ public class TelevisoreServiceImpl implements TelevisoreService {
 			televisoreDao.setConnection(connection);
 
 			result = televisoreDao.findByExample(input);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	public List<Televisore> cercaProdottiNelIntervallo(Date inizio, Date fine) throws Exception {
+		List<Televisore> result = new ArrayList<>();
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+
+			televisoreDao.setConnection(connection);
+			result = televisoreDao.findAllCreatedInRangeDates(inizio, fine);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	public Televisore cercaIlPiuGrande() throws Exception {
+		Televisore result = new Televisore();
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+
+			televisoreDao.setConnection(connection);
+			result = televisoreDao.findByMaxInch();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	public List<String> cercaProdottiNegliUltimiSeiMesi() throws Exception {
+		List<String> result = new ArrayList<String>();
+		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
+
+			televisoreDao.setConnection(connection);
+			result = televisoreDao.findAllCreatedInLastSixMonths();
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,5 +1,7 @@
 package it.prova.televisoredaowithservices.test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +22,15 @@ public class TestTelevisore {
 			System.out.println("In tabella ci sono " + televisoreService.listAll().size() + " elementi.");
 
 			testRimozioneTelevisore(televisoreService);
+			System.out.println("In tabella ci sono " + televisoreService.listAll().size() + " elementi.");
+
+			testCercaProdottiNelIntervallo(televisoreService);
+			System.out.println("In tabella ci sono " + televisoreService.listAll().size() + " elementi.");
+
+			testCercaIlPiuGrande(televisoreService);
+			System.out.println("In tabella ci sono " + televisoreService.listAll().size() + " elementi.");
+
+			testCercaProdottiNegliUltimiSeiMesi(televisoreService);
 			System.out.println("In tabella ci sono " + televisoreService.listAll().size() + " elementi.");
 
 		} catch (Exception e) {
@@ -69,6 +80,67 @@ public class TestTelevisore {
 		}
 
 		System.out.println(".......testFindByExample PASSED.............");
+	}
+
+	private static void testCercaProdottiNelIntervallo(TelevisoreService televisoreService) throws Exception {
+
+		System.out.println(".......testCercaProdottiNelIntervallo inizio.............");
+
+		televisoreService.inserisciNuovo(
+				new Televisore("LG", "slim4", 55, new SimpleDateFormat("dd-MM-yyyy").parse("03-06-2022")));
+		televisoreService.inserisciNuovo(
+				new Televisore("philips", "V6", 65, new SimpleDateFormat("dd-MM-yyyy").parse("03-05-2022")));
+
+		Date dataInizio = new SimpleDateFormat("dd-MM-yyyy").parse("31-03-2022");
+		Date dataFine = new SimpleDateFormat("dd-MM-yyyy").parse("21-10-2022");
+
+		List<Televisore> result = televisoreService.cercaProdottiNelIntervallo(dataInizio, dataFine);
+
+		if (result.size() != 2)
+			throw new RuntimeException("testCercaProdottiNelIntervallo FAILED ");
+
+		for (Televisore televisoreItem : result) {
+			televisoreService.rimuovi(televisoreItem);
+		}
+
+		System.out.println(".......testCercaProdottiNelIntervallo PASSED.............");
+
+	}
+
+	private static void testCercaIlPiuGrande(TelevisoreService televisoreService) throws Exception {
+		System.out.println(".......testCercaIlPiuGrande inizio.............");
+
+		Televisore grande = new Televisore("philips", "V6", 1000,
+				new SimpleDateFormat("dd-MM-yyyy").parse("03-05-2022"));
+		televisoreService.inserisciNuovo(grande);
+
+		Televisore result = televisoreService.cercaIlPiuGrande();
+
+		if (result.getPollici() != grande.getPollici())
+			throw new RuntimeException("testCercaProdottiNelIntervallo FAILED ");
+
+		televisoreService.rimuovi(televisoreService.listAll().get(0));
+
+		System.out.println(".......testCercaIlPiuGrande PASSED.............");
+
+	}
+
+	private static void testCercaProdottiNegliUltimiSeiMesi(TelevisoreService televisoreService) throws Exception {
+		System.out.println(".......testCercaProdottiNegliUltimiSeiMesi inizio.............");
+
+		televisoreService.inserisciNuovo(
+				new Televisore("LG", "slim4", 55, new SimpleDateFormat("dd-MM-yyyy").parse("03-06-2022")));
+		televisoreService.inserisciNuovo(
+				new Televisore("philips", "V6", 65, new SimpleDateFormat("dd-MM-yyyy").parse("03-05-2022")));
+
+		List<String> result = televisoreService.cercaProdottiNegliUltimiSeiMesi();
+
+		if (result.size() < 2)
+			throw new RuntimeException("testCercaProdottiNegliUltimiSeiMesi FAILED");
+		televisoreService.rimuovi(televisoreService.listAll().get(0));
+		televisoreService.rimuovi(televisoreService.listAll().get(0));
+
+		System.out.println(".......testCercaProdottiNegliUltimiSeiMesi PASSED.............");
 	}
 
 }
